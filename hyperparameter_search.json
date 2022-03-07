@@ -1,0 +1,111 @@
+{
+  "setup": {
+    "logging_level": "INFO",
+    "address": "127.0.0.1:57780",
+    "_redis_password": "password"
+  },
+  "scheduler": {
+    "name": "ray.tune.schedulers.AsyncHyperBandScheduler",
+    "time_attr": "training_iteration",
+    "metric": "val_loss",
+    "mode": "min",
+    "max_t": 5,
+    "grace_period": 1,
+    "reduction_factor": 2,
+    "brackets": 1
+  },
+  "searcher": {
+    "name": "ray.tune.suggest.hyperopt.HyperOptSearch",
+    "max_concurrent": 6,
+    "metric": "val_loss",
+    "mode": "min",
+    "n_initial_points": 50,
+    "use_early_stopped_trials": true
+  },
+  "train_spec": {
+    "name": "Ray_Optimization",
+    "resources_per_trial": {
+      "cpu": 10,
+      "gpu": 1,
+      "extra_cpu": 1,
+      "extra_gpu": 0
+    },
+    "stop": {
+      "auc": 50,
+      "reached_max_step": true,
+      "early_stopped": true
+    },
+    "config": {
+      "epochs_per_timestep": 20,
+      "validation_batches": 10
+    },
+    "num_samples": 500,
+    "max_failures": 10,
+    "checkpoint_at_end": false
+  },
+  "search_space": {
+    "training": {
+      "optimizer": {
+        "learning_rate": {
+          "type": "hyperopt.hp.lognormal",
+          "name": "learning_rate",
+          "args": [
+            -4,
+            2
+          ]
+        }
+      }
+    },
+    "model": {
+      "reconstruction_loss": {
+        "weight_clipping": {
+          "name": "reconstruction_loss_weighting_clipping",
+          "type": "hyperopt.hp.uniform",
+          "args": [
+            1,
+            20
+          ]
+        }
+      },
+      "wae_lambda": {
+        "name": "wae_lambda",
+        "type": "hyperopt.hp.lognormal",
+        "args": [
+          0,
+          3
+        ]
+      },
+      "weighting_random_encoder": {
+        "name": "weighting_random",
+        "type": "hyperopt.hp.lognormal",
+        "args": [
+          -2,
+          3
+        ]
+      },
+      "output_fn": {
+        "name": "output_function",
+        "type": "hyperopt.hp.choice",
+        "args": [
+          [
+            "softmax",
+            "softplus"
+          ]
+        ]
+      },
+      "latent_dim": {
+        "name": "latent_dim",
+        "type": "hyperopt.hp.quniform",
+        "args": [
+          32,
+          140,
+          4
+        ]
+      }
+    }
+  },
+  "analysis": {
+    "mode": "min",
+    "metric": "auc"
+  }
+}

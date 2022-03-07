@@ -1,0 +1,16 @@
+.git
+.gitignore
+parameters.json
+hyperparameter_search.json
+setup.cfg
+.pylintrc
+.vulture_whitelist.py
+.pytype
+.ipynb_checkpoints
+*/.ipynb_checkpoints
+__pycache__
+*.egg-info
+./docker_images
+build_docker.sh
+run_docker.sh
+.cache

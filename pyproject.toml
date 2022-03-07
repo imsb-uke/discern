@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "discern"
+version = "0.1.0"
+description = "Wasserstein Auto-Encoder for expression reconstruction"
+authors = [
+"Can Ergen <can.ergen@zmnh.uni-hamburg.de>",
+"Pierre Machart <pierre.machart@zmnh.uni-hamburg.de>",
+"Fabian Hausmann <fabian.hausmann@zmnh.uni-hamburg.de>",
+]
+
+build = "build.py"
+
+[tool.poetry.dependencies]
+python = "^3.6.9"
+ray = {extras = ["default", "tune"], version = ">=1.6.0,<1.7.0"}
+hyperopt = "^0.2.3"
+scanpy = "^1.6.0"
+tensorflow = "2.1.0"
+tensorflow-addons = "^0.7.1"
+Cython = "^0.29.16"
+scikit-learn = "^0.23.1"
+llvmlite = "<0.35.0"
+ipykernel = {version = "^5.5.0", optional = true}
+joblib = "^1.0.1"
+click = "^7.1.2"
+Sphinx = {version = "^4.1.1", optional = true}
+sphinx-rtd-theme = {version = "^0.5.2", optional = true}
+
+[tool.poetry.dev-dependencies]
+ray = {extras = ["debug"], version = ">=1.6.0,<1.7.0"}
+pytest = "^5.3.5"
+pytest-cov = "^2.8.1"
+pytest-xdist = "^1.31.0"
+mypy = "^0.782"
+pylint = "^2.5.0"
+yapf = "^0.30.0"
+pydocstyle = "^5.0.2"
+pytest-rerunfailures = "^9.0"
+rope = "^0.18.0"
+vulture = "^2.3"
+rstcheck = {version = "^3.3.1", optional = true}
+
+[tool.poetry.extras]
+jupyter = ["ipykernel"]
+doc = ["Sphinx", "rstcheck","sphinx_rtd_theme"]
+
+[tool.poetry.scripts]
+merge_parameter = "discern._scripts.merge_parameters:main"
+discern =  "discern.__main__:main"
+
+[tool.pylint.messages_control]
+disable = "import-error"
+[build-system]
+requires = ["poetry_core>=1.0.0","Cython", "numpy<1.20.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.vulture]
+make_whitelist = false
+min_confidence = 80
+ignore_names = ["unused_*"]
+paths = ["discern", "ray_hyperpara.py", ".vulture_whitelist.py"]
+sort_by_size = true
+verbose = false
