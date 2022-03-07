@@ -10,13 +10,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
+import pathlib
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+rootpath = pathlib.Path(__file__).parents[2].resolve()
+sys.path.insert(0, rootpath.as_posix())
 import sphinx_rtd_theme
 import toml
 
-with open("../../pyproject.toml") as file:
+with rootpath.joinpath("pyproject.toml").open("r") as file:
     args = toml.load(file)["tool"]["poetry"]
 
 

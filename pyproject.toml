@@ -25,6 +25,7 @@ joblib = "^1.0.1"
 click = "^7.1.2"
 Sphinx = {version = "^4.1.1", optional = true}
 sphinx-rtd-theme = {version = "^0.5.2", optional = true}
+toml = {version =  "^0.10.2", optional = true}
 
 [tool.poetry.dev-dependencies]
 ray = {extras = ["debug"], version = ">=1.6.0,<1.7.0"}
@@ -42,7 +43,7 @@ rstcheck = {version = "^3.3.1", optional = true}
 
 [tool.poetry.extras]
 jupyter = ["ipykernel"]
-doc = ["Sphinx", "rstcheck","sphinx_rtd_theme"]
+doc = ["Sphinx", "rstcheck","sphinx_rtd_theme","toml"]
 
 [tool.poetry.scripts]
 merge_parameter = "discern._scripts.merge_parameters:main"
@@ -51,7 +52,7 @@ discern =  "discern.__main__:main"
 [tool.pylint.messages_control]
 disable = "import-error"
 [build-system]
-requires = ["poetry_core>=1.0.0","Cython", "numpy<1.20.0"]
+requires = ["poetry_core>=1.0.0","Cython", "numpy<1.20.0","setuptools"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.vulture]

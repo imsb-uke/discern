@@ -3,71 +3,71 @@
 API
 ===
 
-scWAE
------
+DISCERN
+-------
 
-.. automodule:: scwae
+.. automodule:: discern
    :members:
    :inherited-members:
 
-Batch correction functions
---------------------------
+Reconstruction functions
+------------------------
 
-.. automodule:: scwae.estimators
+.. automodule:: discern.estimators
    :members:
    :inherited-members:
 
-.. automodule:: scwae.estimators.batch_integration
+.. automodule:: discern.estimators.batch_integration
    :members:
    :inherited-members:
 
-.. automodule:: scwae.estimators.callbacks
+.. automodule:: discern.estimators.callbacks
    :members:
    :inherited-members:
 
-.. automodule:: scwae.estimators.customlayers
+.. automodule:: discern.estimators.customlayers
    :members:
 
-.. automodule:: scwae.estimators.losses
-   :members:
-   :inherited-members:
-
-.. automodule:: scwae.estimators.run_exp
+.. automodule:: discern.estimators.losses
    :members:
    :inherited-members:
 
-.. automodule:: scwae.estimators.utilities_wae
+.. automodule:: discern.estimators.run_exp
+   :members:
+   :inherited-members:
+
+.. automodule:: discern.estimators.utilities_wae
    :members:
    :inherited-members:
 
 I/O functions
 -------------
 
-.. automodule:: scwae.io
+.. automodule:: discern.io
    :members:
 
 Preprocessing functions
 -----------------------
 
 
-.. automodule:: scwae.preprocessing
+.. automodule:: discern.preprocessing
    :members:
    :inherited-members:
 
 Online/Incremental learning
 ---------------------------
 
-.. automodule:: scwae.online_learning
+.. automodule:: discern.online_learning
    :members:
    :inherited-members:
 
 Other functions
 ---------------
 
-.. automodule:: scwae.functions
+.. automodule:: discern.functions
    :members:
    :inherited-members:
 
-.. automodule:: scwae.mmd
+.. automodule:: discern.mmd
    :members:
    :inherited-members:
