@@ -1,11 +1,16 @@
 [tool.poetry]
-name = "discern"
+name = "discern-reconstruction"
+packages=[{include = "discern"}]
 version = "0.1.0"
 description = "Wasserstein Auto-Encoder for expression reconstruction"
+license= "MIT"
+readme = "README.rst"
+homepage = "https://discern.readthedocs.io/en/latest/quickinfo.html"
+repository = "https://github.com/imsb-uke/discern"
 authors = [
+"Fabian Hausmann <fabian.hausmann@zmnh.uni-hamburg.de>",
 "Can Ergen <can.ergen@zmnh.uni-hamburg.de>",
 "Pierre Machart <pierre.machart@zmnh.uni-hamburg.de>",
-"Fabian Hausmann <fabian.hausmann@zmnh.uni-hamburg.de>",
 ]
 
 build = "build.py"
