@@ -1,61 +1,46 @@
 {
     "exp_param": {
-        "experiments_dir": "scwae_data/experiments"
+        "experiments_dir": "experiments"
     },
     "experiments": {
-        "hyperparameter_new_mmd": {
-            "hyperparameter_search": null,
+        "default_experiment": {
             "input_ds": {
-                "n_cpus_preprocessing": 30,
+                "clustering": {
+                    "neighbors": 10,
+                    "res": 0.15
+                },
                 "filtering": {
                     "min_cells": 3,
-                    "min_genes": 10
+                    "min_genes": 400
                 },
+                "n_cpus_preprocessing": 20,
                 "raw_input": [
-                    "scwae_data/raw_data.h5ad"
+                    "data/citeseq.h5ad",
+                    "data/pbmc8k.h5ad"
                 ],
                 "scale": {
                     "LSN": 20000,
                     "fixed_scaling": {
                         "mean": "genes",
-                        "var": "genes",
-                        "add_to_mean": 0.0,
-                        "add_to_var": 0.0
+                        "var": "genes"
                     }
                 },
                 "split": {
                     "balanced_split": true,
                     "split_seed": 0,
                     "test_cells": 0,
-                    "valid_cells": 1000,
-                    "mmd_cells": 1.0
+                    "valid_cells": 0.1
                 }
             },
             "model": {
-                "activation_fn": "tensorflow.keras.activations.relu",
-                "latent_dim": 128,
-                "output_fn": null,
-                "reconstruction_loss": {
-                    "name": "MaskedHuber",
-                    "delta": 9.0,
-                    "zeros": null
+                "activation_fn": "tensorflow_addons.activations.mish",
+                "conditional_regularization": {
+                    "l2": 0.0,
+                    "name": "tensorflow.keras.regularizers.L1L2"
                 },
-                "wae_lambda": 11.32395861201524,
-                "weighting_decoder_dropout": 5.0,
-                "weighting_random_encoder": 4.407237266397266e-05,
-                "input_clipping": 10,
-                "encoder": {
-                    "layers": [
-                        1024,
-                        512,
-                        256
-                    ],
-                    "norm_type": [
-                        "conditionallayernorm",
-                        "conditionallayernorm",
-                        "conditionallayernorm"
-                    ],
-                    "regularization": 0.15
+                "crossentropy": {
+                    "label_smoothing": 0.0,
+                    "lower_label_smoothing": 0.1
                 },
                 "decoder": {
                     "layers": [
@@ -63,33 +48,51 @@
                         512,
                         1024
                     ],
-                    "norm_type": [
-                        "conditionallayernorm",
-                        "conditionallayernorm",
-                        "conditionallayernorm"
+                    "regularization": 0.0
+                },
+                "encoder": {
+                    "layers": [
+                        1024,
+                        512,
+                        256
                     ],
-                    "regularization": 0.18
-                }
+                    "regularization": 0.4
+                },
+                "latent_dim": 48,
+                "norm_type": [
+                    "conditionallayernorm",
+                    "conditionallayernorm",
+                    "conditionallayernorm"
+                ],
+                "output_fn": null,
+                "reconstruction_loss": {
+                    "delta": 9.0,
+                    "name": "HuberLoss"
+                },
+                "wae_lambda": 1500,
+                "weighting_decoder_dropout": 10000,
+                "weighting_random_encoder": 1e-08
             },
             "training": {
-                "batch_size": 128,
-                "max_steps": 100,
+                "GPU": [
+                    0
+                ],
+                "XLA": true,
+                "batch_size": 192,
+                "early_stopping": {
+                    "delay": 5,
+                    "min_delta": 0.01,
+                    "patience": 30
+                },
+                "max_steps": 200,
                 "optimizer": {
                     "algorithm": "tensorflow_addons.optimizers.RectifiedAdam",
                     "amsgrad": false,
                     "beta_1": 0.85,
                     "beta_2": 0.95,
-                    "learning_rate": 0.0009136083007127199
+                    "learning_rate": 0.001
                 },
-                "parallel_pc": 5,
-                "XLA": true,
-                "early_stopping": {
-                    "min_delta": 0.01,
-                    "patience": 20
-                },
-                "GPU": [
-                    2
-                ]
+                "parallel_pc": 5
             }
         }
     }

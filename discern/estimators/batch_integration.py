@@ -1,24 +1,25 @@
 """Basic DISCERN architecture."""
 import logging
 import pathlib
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
+import anndata
 import numpy as np
 import tensorflow as tf
 from tensorflow_addons import optimizers as tfa_opt
 
-import discern
-from discern import io, functions
+from discern._config import DISCERNConfig
+from discern import functions, io
 from discern.estimators import losses, utilities_wae
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class DISCERN(discern.DISCERNConfig):  # pylint: disable=too-many-instance-attributes
+class DISCERN(DISCERNConfig):  # pylint: disable=too-many-instance-attributes
     """Basic DISCERN model holding a lot of configuration.
 
     Args:
-        **kwargs: discern.DISCERNConfig init args.
+        **kwargs: DISCERNConfig init args.
 
     Attributes:
         wae_model (Union[None, tf.keras.Model]): Keras model.
@@ -278,24 +279,10 @@ class DISCERN(discern.DISCERNConfig):  # pylint: disable=too-many-instance-attri
         }
         return self.decoder.predict(dataset, batch_size=batch_size)
 
-    def project_to_metadata(self,
-                            input_data: io.DISCERNData,
-                            metadata: List[Tuple[str, str]],
-                            save_path: pathlib.Path,
-                            store_sigmas: bool = False):
-        """Project to average batch with filtering for certain metadata.
-
-        Args:
-            input_data (io.DISCERNData): Input cells.
-            metadata (List[Tuple[str, str]]): Column-value-Pair used for filerting the cells.
-                Column should match to name in input_data.obs and
-                value to a key in this column.
-            save_path (pathlib.Path): Path for saving the created AnnData objects.
-            store_sigmas (bool, optional): Save sigmas in obsm. Defaults to False.
-
-        """
-        # pylint: disable=too-many-locals, too-many-arguments
-        save_path = pathlib.Path(save_path).resolve()
+    def _prepare_and_generate_latent(
+            self,
+            input_data: io.DISCERNData,
+            store_sigmas: bool = False) -> Tuple[Dict[str, Any], np.ndarray]:
         n_labels = self.encoder.input_shape["encoder_labels"][1]
         input_labels = input_data.obs.batch.cat.codes.values.astype(np.int32)
         input_labels_one_hot = tf.one_hot(input_labels,
@@ -314,6 +301,77 @@ class DISCERN(discern.DISCERNConfig):  # pylint: disable=too-many-instance-attri
                                     threshold=-np.inf if is_scaled else 0.0)
         if store_sigmas:
             generate_h5ad_kwargs["obsm"]["X_DISCERN_sigma"] = sigma
+        return generate_h5ad_kwargs, input_labels_one_hot
+
+    def reconstruct(self,
+                    input_data: io.DISCERNData,
+                    column: Optional[str],
+                    column_value: Optional[str],
+                    store_sigmas: bool = False) -> anndata.AnnData:
+        """Reconstruct expression data.
+
+        Args:
+            input_data (io.DISCERNData): DISCERN preprocessed input data
+            column (Optional[str]): Column value used for reconstruction.
+                If `None` just auto-encode the data.
+            column_value (Optional[str], optional): Value in `column` used for
+                reconstruction. If None, project to the average from `column`.
+            store_sigmas (bool, optional): Store latent space sigma values
+                in final output. Defaults to False.
+
+        Returns:
+            anndata.AnnData: Reconstructed expression data with
+                input data in raw and DISCERN latent space in obsm.
+        """
+        generate_h5ad_kwargs, input_labels_one_hot = self._prepare_and_generate_latent(
+            input_data, store_sigmas=store_sigmas)
+
+        latent = generate_h5ad_kwargs["obsm"]["X_DISCERN"]
+
+        generate_h5ad_kwargs["raw"] = input_data
+
+        _LOGGER.debug('Generation of latent code finished')
+
+        if column is None:
+            projected = self.generate_cells_from_latent(
+                latent, input_labels_one_hot, input_data.batch_size)
+            _LOGGER.debug('Generation of unprojected cell finished')
+            return io.generate_h5ad(counts=projected,
+                                    save_path=None,
+                                    **generate_h5ad_kwargs)
+        tmp_labels = _create_one_hot_labels(input_labels_one_hot, column,
+                                            column_value, input_data)
+        projected = self.generate_cells_from_latent(latent, tmp_labels,
+                                                    input_data.batch_size)
+        _LOGGER.debug('Projection of %s:%s finished, saving files...', column,
+                      column_value)
+        return io.generate_h5ad(counts=projected,
+                                save_path=None,
+                                **generate_h5ad_kwargs)
+
+    def project_to_metadata(self,
+                            input_data: io.DISCERNData,
+                            metadata: List[Tuple[str, str]],
+                            save_path: pathlib.Path,
+                            store_sigmas: bool = False):
+        """Project to average batch with filtering for certain metadata.
+
+        Args:
+            input_data (io.DISCERNData): Input cells.
+            metadata (List[Tuple[str, str]]): Column-value-Pair used for filerting the cells.
+                Column should match to name in input_data.obs and
+                value to a key in this column.
+            save_path (pathlib.Path): Path for saving the created AnnData objects.
+            store_sigmas (bool, optional): Save sigmas in obsm. Defaults to False.
+
+        """
+        # pylint: disable=too-many-locals, too-many-arguments
+        save_path = pathlib.Path(save_path).resolve()
+
+        generate_h5ad_kwargs, input_labels_one_hot = self._prepare_and_generate_latent(
+            input_data, store_sigmas=store_sigmas)
+
+        latent = generate_h5ad_kwargs["obsm"]["X_DISCERN"]
 
         _LOGGER.debug('Generation of latent code finished')
 
@@ -328,25 +386,11 @@ class DISCERN(discern.DISCERNConfig):  # pylint: disable=too-many-instance-attri
             return
 
         for column, value in metadata:
-            tmp_labels = np.zeros_like(input_labels_one_hot)
             filename = f"projected_to_average_{column}"
             if value:
-                idx = input_data.obs[column] == value
-                if idx.sum() == 0.0:
-                    raise ValueError(f"Value `{value}´ not in `{column}´.")
-                freq = input_labels_one_hot[idx].sum(axis=0) / idx.sum()
-                freq = np.nan_to_num(freq, posinf=0.0, nan=0.0, neginf=0.0)
-                tmp_labels += freq
                 filename += f"_{value}"
-            elif column == "batch":
-                summed = input_labels_one_hot.sum(axis=0)
-                tmp_labels += summed / summed.sum()
-            else:
-                for col_value in input_data.obs[column].unique():
-                    idx = input_data.obs[column] == col_value
-                    freq = input_labels_one_hot[idx].sum(axis=0) / idx.sum()
-                    tmp_labels[idx, :] = freq
-
+            tmp_labels = _create_one_hot_labels(input_labels_one_hot, column,
+                                                value, input_data)
             projected = self.generate_cells_from_latent(
                 latent, tmp_labels, input_data.batch_size)
             _LOGGER.debug('Projection of %s:%s finished, saving files...',
@@ -357,3 +401,29 @@ class DISCERN(discern.DISCERNConfig):  # pylint: disable=too-many-instance-attri
                 **generate_h5ad_kwargs)
             _LOGGER.debug('Saving files finished at %s.h5ad', filename)
         _LOGGER.debug('All projections finished successfully')
+
+
+def _create_one_hot_labels(input_labels_one_hot: np.ndarray,
+                           column: Optional[str], value: Optional[str],
+                           input_data: io.DISCERNData) -> np.ndarray:
+    if column is None:
+        return input_labels_one_hot
+
+    tmp_labels = np.zeros_like(input_labels_one_hot)
+
+    if value:
+        idx = input_data.obs[column] == value
+        if idx.sum() == 0.0:
+            raise ValueError(f"Value `{value}´ not in `{column}´.")
+        freq = input_labels_one_hot[idx].sum(axis=0) / idx.sum()
+        freq = np.nan_to_num(freq, posinf=0.0, nan=0.0, neginf=0.0)
+        tmp_labels += freq
+    elif column == "batch":
+        summed = input_labels_one_hot.sum(axis=0)
+        tmp_labels += summed / summed.sum()
+    else:
+        for col_value in input_data.obs[column].unique():
+            idx = input_data.obs[column] == col_value
+            freq = input_labels_one_hot[idx].sum(axis=0) / idx.sum()
+            tmp_labels[idx, :] = freq
+    return tmp_labels

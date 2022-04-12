@@ -7,6 +7,7 @@ import pytest
 import tensorflow as tf
 
 import discern
+from discern._config import DISCERNConfig
 
 
 class TestDISCERNConfig:
@@ -19,7 +20,7 @@ class TestDISCERNConfig:
         parameters_path = pathlib.Path(parameters)
         with parameters_path.open('r') as file:
             parameters = json.load(file)
-        got = discern.DISCERNConfig.from_json(parameters)
+        got = DISCERNConfig.from_json(parameters)
         model_params = parameters['model']
         attributes_to_check = {
             "latent_dim": int(model_params['latent_dim']),

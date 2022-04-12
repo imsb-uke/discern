@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "discern-reconstruction"
 packages=[{include = "discern"}]
-version = "0.1.0"
+version = "0.1.1"
 description = "Wasserstein Auto-Encoder for expression reconstruction"
 license= "MIT"
 readme = "README.rst"
