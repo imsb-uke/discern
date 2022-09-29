@@ -23,7 +23,7 @@ Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 An interactive tutorial can be found in `Tutorial.ipynb <https://github.com/imsb-uke/discern/blob/main/Tutorial.ipynb>`_.
-
+For larger datasets, a tutorial using multiple batches and accessing the effect of different reference batches, can be found in `Tutorial-MultiBatch.ipynb <https://github.com/imsb-uke/discern/blob/main/Tutorial-MultiBatch.ipynb>`_.
 
 Prerequisites
 ^^^^^^^^^^^^^
