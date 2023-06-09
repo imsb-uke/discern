@@ -8,10 +8,6 @@
    :target: https://discern.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://github.com/imsb-uke/discern/actions/workflows/dockerimage.yml/badge.svg
-   :target: https://github.com/imsb-uke/discern/actions/workflows/dockerimage.yml
-   :alt: Docker build status
-
 DISCERN
 =======
 
@@ -22,8 +18,7 @@ Getting Started
 ---------------
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-An interactive tutorial can be found in `Tutorial.ipynb <https://github.com/imsb-uke/discern/blob/main/Tutorial.ipynb>`_.
-For larger datasets, a tutorial using multiple batches and accessing the effect of different reference batches, can be found in `Tutorial-MultiBatch.ipynb <https://github.com/imsb-uke/discern/blob/main/Tutorial-MultiBatch.ipynb>`_.
+The the full `documentation <https://discern.readthedocs.io/en/latest/>`_ contains further information and `Tutorials <https://discern.readthedocs.io/en/latest/Tutorials.html>`_ to get started.
 
 Prerequisites
 ^^^^^^^^^^^^^
@@ -123,41 +118,6 @@ DISCERN also supports online training. You can add new batches to your dataset a
 
 The data gets automatically preprocessed and added to the dataset. You can run ``project`` afterwards as usual (without the ``--filename`` flag).
 ``--freeze`` is important to freeze non-conditional layers in training.
-
-Testing
-^^^^^^^
-
-For critical parts of the model several tests has been implemented. They can be run with:
-
-.. code-block:: sh
-
-   poetry run pytest --cov=discern --cov-report=term
-
-(Requires the development version of discern).
-
-Some tests are slow and don't run by default, but you can run them using:
-
-.. code-block:: sh
-
-   poetry run pytest --runslow --cov=discern --cov-report=term
-
-Coding style
-^^^^^^^^^^^^
-
-To enforce code style guidlines `pylint <https://www.pylint.org/>`_ and `mypy <http://mypy-lang.org/>`_ are use. Example commands are shown below:
-
-.. code-block:: sh
-
-   poetry run pylint discern ray_hyperpara.py
-   poetry run mypy discern ray_hyperpara.py
-
-For automatic code formatting `yapf <https://github.com/google/yapf>`_ was used:
-
-.. code-block:: sh
-
-   yapf -i <filename.py>
-
-These tools are included in the dev-dependencies.
 
 Authors
 -------
