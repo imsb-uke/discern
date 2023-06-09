@@ -19,7 +19,7 @@ Getting Started
 ---------------
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-The the full `documentation <https://discern.readthedocs.io/en/latest/>`_ contains further information and `Tutorials <https://discern.readthedocs.io/en/latest/Tutorials.html>`_ to get started.
+The the full `documentation <https://discern.readthedocs.io/en/latest/>`_ contains further information and `tutorials <https://discern.readthedocs.io/en/latest/Tutorials.html>`_ to get started.
 
 Prerequisites
 ^^^^^^^^^^^^^
