@@ -13,6 +13,7 @@ DISCERN
 
 DISCERN is a deep learning approach to reconstruction expression information
 of single-cell RNAseq data sets using a high quality reference.
+Please also have a look into our preprint `DiSCERN - Deep Single Cell Expression ReconstructioN for improved cell clustering and cell subtype and state detection <https://doi.org/10.1101/2022.03.09.483600>`_.
 
 Getting Started
 ---------------
