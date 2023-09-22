@@ -1,14 +1,14 @@
 .. image:: https://img.shields.io/pypi/l/discern-reconstruction
+   :target: LICENSE
    :alt: License
-
 .. image:: https://readthedocs.org/projects/discern/badge/?version=latest
    :target: https://discern.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
-
 .. image:: https://img.shields.io/pypi/v/discern-reconstruction
+   :target: https://pypi.org/project/discern-reconstruction/
    :alt: PyPI - Version
-
 .. image:: https://img.shields.io/docker/v/fhausmann/discern/latest?label=Docker
+   :target: https://hub.docker.com/repository/docker/fhausmann/discern
    :alt: Docker Image Version (tag latest semver)
 
 
