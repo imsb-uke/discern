@@ -5,10 +5,6 @@
     "experiments": {
         "default_experiment": {
             "input_ds": {
-                "clustering": {
-                    "neighbors": 10,
-                    "res": 0.15
-                },
                 "filtering": {
                     "min_cells": 3,
                     "min_genes": 400
