@@ -76,7 +76,7 @@ You can use the main function of discern for most use cases. Usually, you have t
 
 .. code-block:: sh
 
-   poetry run discern process <parameters.json>
+   poetry run discern preprocess <parameters.json>
 
 An example parameters.json is provided together with an hyperparameter_search.json for hyperparameter optimization using ray[tune].
 The training can be done with
